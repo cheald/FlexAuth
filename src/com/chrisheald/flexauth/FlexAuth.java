@@ -34,6 +34,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -98,10 +99,44 @@ public class FlexAuth extends Activity {
 		private EditText accountName;
 		private EditText serial;
 		private EditText secret;
+		private Context context;
 		
 		public AccountDialog(Context c, CharSequence title) {
 			super(c);
+			this.context = c;
 			this.setTitle(title);
+		}
+		
+		private Token generate() {
+			Token t = new Token(ENROLL_URL, PUB_KEY);
+			try {
+				t.generate();
+			} catch (NoSuchAlgorithmException e) {
+	    		new AlertDialog.Builder(context)
+	    		.setMessage("HMAC-SHA1 is not supported on this device.")
+	    		.setTitle("Error")
+	    		.setIcon(android.R.drawable.stat_notify_error)
+	    		.show();
+			} catch (ClientProtocolException e) {
+	    		new AlertDialog.Builder(context)
+	    		.setMessage("Error in client protocol.")
+	    		.setTitle("Error")
+	    		.setIcon(android.R.drawable.stat_notify_error)
+	    		.show();
+			} catch (IOException e) {
+	    		new AlertDialog.Builder(context)
+	    		.setMessage("Couldn't establish a network connection. Please try again later.")
+	    		.setTitle("Error")
+	    		.setIcon(android.R.drawable.stat_notify_error)
+	    		.show();
+			} catch (InvalidSerialException e) {
+	    		new AlertDialog.Builder(context)
+	    		.setMessage("Failed to generate a valid serial. Please try again.")
+	    		.setTitle("Error")
+	    		.setIcon(android.R.drawable.stat_notify_error)
+	    		.show();
+	    	}
+			return t;
 		}
 		
 		protected void onCreate(Bundle savedInstanceState) {
@@ -112,22 +147,26 @@ public class FlexAuth extends Activity {
 			accountName = (EditText)findViewById(R.id.accountName);
 			serial = (EditText)findViewById(R.id.tokenSerial);
 			secret = (EditText)findViewById(R.id.tokenSecret);
+
+			Token t = generate();
+			secret.setText(t.secret);
+			serial.setText(t.serial);					
 			accountName.setText("");
-			serial.setText("");
-			secret.setText("");
 			
 			save.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					accountName = (EditText)findViewById(R.id.accountName);
+					
 					serial = (EditText)findViewById(R.id.tokenSerial);
 					secret = (EditText)findViewById(R.id.tokenSecret);
-					
+
 					String n = accountName.getText().toString().trim();
 					String ss = serial.getText().toString().trim();
 					String sl = secret.getText().toString().trim();
 					String[] args = {n, ss, sl};				
 					db.execSQL("INSERT INTO accounts (name, serial, secret) VALUES (?, ?, ?)", args);
+					Toast.makeText(context, "Token successfully added!", 4).show();
 					updateTokenList();
 					dismiss();
 				}
@@ -136,26 +175,11 @@ public class FlexAuth extends Activity {
 			generate.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Token t = new Token(ENROLL_URL, PUB_KEY);
-					try {
-						t.generate();
-						EditText serial = (EditText)findViewById(R.id.tokenSerial);
-						EditText secret = (EditText)findViewById(R.id.tokenSecret);
-						secret.setText(t.secret);
-						serial.setText(t.serial);					
-					} catch (NoSuchAlgorithmException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (ClientProtocolException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (InvalidSerialException e) {
-						dismiss();
-						showDialog(DIALOG_BAD_SERIAL);
-					}
+					Token t = generate();
+					EditText serial = (EditText)findViewById(R.id.tokenSerial);
+					EditText secret = (EditText)findViewById(R.id.tokenSecret);
+					secret.setText(t.secret);
+					serial.setText(t.serial);					
 				}
 			});
 		}
@@ -188,12 +212,20 @@ public class FlexAuth extends Activity {
 
         viewList();
         
+        Button addNew = (Button)findViewById(R.id.addNewAccount);
+        addNew.setOnClickListener(new View.OnClickListener() {
+        	public void onClick(View v) {
+        		showDialog(DIALOG_EDIT);
+        	}
+        });
+        
 		mHandler.removeCallbacks(mUpdateTimeTask);
 		mHandler.postDelayed(mUpdateTimeTask, 500);
     }
     
     private void updateTokenList() {
     	Cursor c = null;
+    	int count = 0;
 		try {
 			c = readDb.rawQuery(
 					"select * from accounts order by id asc", null);
@@ -208,11 +240,16 @@ public class FlexAuth extends Activity {
 				t._id = c.getInt(c.getColumnIndexOrThrow("id"));
 				c.moveToNext();
 				tAdapter.add(t);
+				count += 1;
 			}
 			tAdapter.notifyDataSetChanged();
 		} finally {
 			if(c != null) c.close();
     	}
+		
+		findViewById(R.id.tokenList).setVisibility(count == 0 ? View.GONE : View.VISIBLE);
+		findViewById(R.id.noTokensLabel).setVisibility(count > 0 ? View.GONE : View.VISIBLE);
+		findViewById(R.id.addNewAccount).setVisibility(count > 0 ? View.GONE : View.VISIBLE);
     }
     
     private void viewToken(long tokenId) {

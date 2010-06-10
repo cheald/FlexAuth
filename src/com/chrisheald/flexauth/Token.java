@@ -144,6 +144,8 @@ public class Token {
 					}
 				}
 				if(!(serial.startsWith("US-") || serial.startsWith("EU-"))) {
+					serial = "";
+					secret = "";
 					throw new InvalidSerialException("Could not generate a valid serial.");
 				}
 				

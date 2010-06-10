@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="addNewToken">Add A Token</string>
     <string name="authCode">Authentication Code</string>
     <string name="tokenSecret">Token Secret</string>
     <string name="tokenSerial">Token Serial</string>
-    <string name="main_no_items">No Accounts Configured</string>
+    <string name="main_no_items">No tokens yet!</string>
     <string name="generateToken">Generate Token</string>
     <string name="save">Save</string>
     <string name="tokenSecretLabel">Secret</string>

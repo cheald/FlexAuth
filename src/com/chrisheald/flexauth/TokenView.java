@@ -24,20 +24,23 @@ public class TokenView extends Activity {
 		secret.setText(getIntent().getStringExtra("secret"));
 		serial.setText(getIntent().getStringExtra("serial"));
 		authCode.setText(getIntent().getStringExtra("auth"));
+		registerForContextMenu(secret);
+		registerForContextMenu(serial);
 	}
 	
+	private View menuInvoker = null; 
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
     	super.onCreateContextMenu(menu, v, menuInfo);
-    	menu.add(0, COPY_ID, 0, "Copy");
+    	menu.add(0, COPY_ID, 0, "Copy").setIcon(android.R.drawable.ic_menu_save);
+    	menuInvoker = v; 
     }
     
     public boolean onContextItemSelected(MenuItem item) {
-    	AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
     	switch (item.getItemId()) {
     	case COPY_ID:
     		ClipboardManager c = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-    		c.setText(((TextView)info.targetView).getText());
-    		Toast.makeText(this, "Text copied to clipboard", 3);
+    		c.setText(((TextView)menuInvoker).getText());
+    		Toast.makeText(this, "Text copied to clipboard", 3).show();
     		return true;
     	default:
     		super.onContextItemSelected(item);
