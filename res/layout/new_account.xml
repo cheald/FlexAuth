@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent" android:layout_width="fill_parent"
+	android:orientation="vertical" android:padding="10dip">
+	<TextView android:layout_height="wrap_content" android:id="@+id/accountNameText"
+		android:layout_width="fill_parent" android:layout_marginTop="10dip"
+		android:text="@string/accountNameText"></TextView>
+	<EditText android:layout_height="wrap_content" android:id="@+id/accountName"
+		android:layout_width="fill_parent" android:maxLines="1"></EditText>
+	<TextView android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:id="@+id/tokenSerialLabel"
+		android:layout_marginTop="10dip" android:text="@string/tokenSerialLabel"></TextView>
+	<EditText android:layout_height="wrap_content"
+		android:layout_width="fill_parent" android:id="@+id/tokenSerial"
+		android:maxLines="1"></EditText>
+	<TextView android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:id="@+id/tokenSecretLabel"
+		android:layout_marginTop="10dip" android:text="@string/tokenSecretLabel"></TextView>
+	<EditText android:layout_height="wrap_content"
+		android:layout_width="fill_parent" android:id="@+id/tokenSecret"
+		android:textSize="8pt"></EditText>
+	<RelativeLayout android:id="@+id/RelativeLayout01"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:layout_marginTop="20dp">
+		<Button android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/requestToken"
+			android:text="@string/generateToken" android:layout_alignParentRight="true"></Button>
+		<Button android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_gravity="left"
+			android:id="@+id/saveToken" android:text="@string/save"></Button>
+	</RelativeLayout>
+</LinearLayout>
