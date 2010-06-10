@@ -191,11 +191,11 @@ public class FlexAuth extends Activity {
 			int mod = (int)(System.currentTimeMillis() % 30000L);
 			ProgressBar pb = (ProgressBar)findViewById(R.id.ProgressBar01);
 			if(lastMod == -1 || mod < lastMod) {
-				lastMod = mod;
 				updateTokenList();
 			}
+			lastMod = mod;
 			if(pb != null) pb.setProgress(mod);
-			mHandler.postDelayed(this, 500);
+			mHandler.postDelayed(this, 50);
 		}
 	};
 
@@ -220,7 +220,7 @@ public class FlexAuth extends Activity {
         });
         
 		mHandler.removeCallbacks(mUpdateTimeTask);
-		mHandler.postDelayed(mUpdateTimeTask, 500);
+		mHandler.postDelayed(mUpdateTimeTask, 50);
     }
     
     private void updateTokenList() {

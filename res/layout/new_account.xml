@@ -6,7 +6,7 @@
 		android:layout_width="fill_parent" android:layout_marginTop="10dip"
 		android:text="@string/accountNameText"></TextView>
 	<EditText android:layout_height="wrap_content" android:id="@+id/accountName"
-		android:layout_width="fill_parent" android:maxLines="1"></EditText>
+		android:layout_width="fill_parent" android:imeOptions="actionDone"></EditText>
 	<TextView android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:id="@+id/tokenSerialLabel"
 		android:layout_marginTop="10dip" android:text="@string/tokenSerialLabel"></TextView>
