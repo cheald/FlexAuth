@@ -1,9 +1,10 @@
-This is a multi-token RFC4226-compliant HOTP client that implements the Blizzard Battle.net dual-factor authentication protocol. It should let you use an arbitrary secret for token generation, which will let you keep a backup copy of your authenticator around if you ever need it. Since we're talking about authenticator tech here, if something goes screwy, there's the chance that you might be locked out of your account. By using this program, you fully acknowledge that you bear full responsibility for any damages, data loss, or anything like that.
+This is a multi-token RFC4226-compliant HOTP client that implements the Blizzard Battle.net dual-factor authentication protocol described at http://bnetauth.freeportal.us/specification.html
+
+It should let you use an arbitrary secret for token generation, which will let you keep a backup copy of your authenticator around if you ever need it. Since we're talking about authenticator tech here, if something goes screwy, there's the chance that you might be locked out of your account. By using this program, you fully acknowledge that you bear full responsibility for any damages, data loss, or anything like that.
 
 Short version: If you screw something up (ie, lock yourself out of your account), you agree to absolve me of any responsibility.
 
 Lawyer version: THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
-16. Limitation of Liability.
 
 IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 

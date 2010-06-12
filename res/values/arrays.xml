@@ -1,0 +1,6 @@
+<resources>
+	<string-array name="regions">
+		<item name="regionEU">EU</item>
+		<item name="regionUS">US</item>
+	</string-array>
+</resources>

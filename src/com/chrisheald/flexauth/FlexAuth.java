@@ -33,6 +33,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -48,9 +49,6 @@ public class FlexAuth extends Activity {
 	static final int DELETE_ID = 2;
 	public static final Exception InvalidSerialException = null;
 	private Handler mHandler = new Handler();
-	
-	private String ENROLL_URL;
-	private String PUB_KEY;
 	
 	private SQLiteDatabase db, readDb;
 	private TokenAdapter tAdapter;
@@ -100,6 +98,7 @@ public class FlexAuth extends Activity {
 		private EditText serial;
 		private EditText secret;
 		private Context context;
+		private Spinner region;
 		
 		public AccountDialog(Context c, CharSequence title) {
 			super(c);
@@ -107,8 +106,9 @@ public class FlexAuth extends Activity {
 			this.setTitle(title);
 		}
 		
-		private Token generate() {
-			Token t = new Token(ENROLL_URL, PUB_KEY);
+		private Token generate(String region) {
+			Token t = new Token();
+			t.setRegion(region);
 			try {
 				t.generate();
 			} catch (NoSuchAlgorithmException e) {
@@ -142,13 +142,20 @@ public class FlexAuth extends Activity {
 		protected void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 			setContentView(R.layout.new_account);
+			
+		    region = (Spinner) findViewById(R.id.regionSelect);
+		    ArrayAdapter adapter = ArrayAdapter.createFromResource(context,
+		    		R.array.regions, android.R.layout.simple_spinner_item);
+		    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		    region.setAdapter(adapter);
+			
 			save = (Button)findViewById(R.id.saveToken);
 			generate = (Button)findViewById(R.id.requestToken);
 			accountName = (EditText)findViewById(R.id.accountName);
 			serial = (EditText)findViewById(R.id.tokenSerial);
 			secret = (EditText)findViewById(R.id.tokenSecret);
 
-			Token t = generate();
+			Token t = generate((String)region.getSelectedItem());
 			secret.setText(t.secret);
 			serial.setText(t.serial);					
 			accountName.setText("");
@@ -158,12 +165,22 @@ public class FlexAuth extends Activity {
 				public void onClick(View v) {
 					accountName = (EditText)findViewById(R.id.accountName);
 					
-					serial = (EditText)findViewById(R.id.tokenSerial);
-					secret = (EditText)findViewById(R.id.tokenSecret);
-
 					String n = accountName.getText().toString().trim();
 					String ss = serial.getText().toString().trim();
 					String sl = secret.getText().toString().trim();
+					
+					String error = null;
+					if(n.compareTo("") == 0) {
+						error = "Please enter a name for this token";
+					} else if(ss.compareTo("") == 0) {
+						error = "Please enter a serial for this token";
+					} else if(sl.compareTo("") == 0) {
+						error = "Please enter a secret for this token";
+					}
+					if(error != null) {
+						Toast.makeText(context, error, 4).show();
+						return;
+					}
 					String[] args = {n, ss, sl};				
 					db.execSQL("INSERT INTO accounts (name, serial, secret) VALUES (?, ?, ?)", args);
 					Toast.makeText(context, "Token successfully added!", 4).show();
@@ -175,7 +192,7 @@ public class FlexAuth extends Activity {
 			generate.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Token t = generate();
+					Token t = generate((String)region.getSelectedItem());
 					EditText serial = (EditText)findViewById(R.id.tokenSerial);
 					EditText secret = (EditText)findViewById(R.id.tokenSecret);
 					secret.setText(t.secret);
@@ -188,7 +205,7 @@ public class FlexAuth extends Activity {
 	private int lastMod = -1;
 	private Runnable mUpdateTimeTask = new Runnable() {
 		public void run() {
-			int mod = (int)(System.currentTimeMillis() % 30000L);
+			int mod = (int)((System.currentTimeMillis() + Token.timeOffset) % 30000L);
 			ProgressBar pb = (ProgressBar)findViewById(R.id.ProgressBar01);
 			if(lastMod == -1 || mod < lastMod) {
 				updateTokenList();
@@ -203,13 +220,19 @@ public class FlexAuth extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ENROLL_URL = getResources().getString(R.string.enroll_url);
-        PUB_KEY = getResources().getString(R.string.pubkey);
         
         AppDb dbHelper = new AppDb(this);
         db = dbHelper.write_db();
         readDb = dbHelper.read_db();
 
+        new Thread() {
+        	public void run() {
+            	try {
+        			Token.fetchTimeOffset();
+        		} catch (IOException e) {}
+        	}
+        }.start();
+        
         viewList();
         
         Button addNew = (Button)findViewById(R.id.addNewAccount);
@@ -236,7 +259,7 @@ public class FlexAuth extends Activity {
 				String name = c.getString(c.getColumnIndexOrThrow("name"));
 				String secret = c.getString(c.getColumnIndexOrThrow("secret"));
 				String serial = c.getString(c.getColumnIndexOrThrow("serial"));
-				Token t = new Token(ENROLL_URL, PUB_KEY, name, secret, serial);
+				Token t = new Token(name, secret, serial);
 				t._id = c.getInt(c.getColumnIndexOrThrow("id"));
 				c.moveToNext();
 				tAdapter.add(t);

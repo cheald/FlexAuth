@@ -3,7 +3,7 @@
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:layout_height="fill_parent" android:background="@drawable/background" style="?android:attr/progressBarStyleHorizontal">
 	
-	<ProgressBar android:id="@+id/ProgressBar01" android:layout_width="fill_parent" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminate="false" android:max="30000" android:progress="15000" style="?android:attr/progressBarStyleHorizontal" android:layout_marginLeft="20dp" android:layout_marginRight="20dp" android:layout_marginTop="15dp" android:layout_height="10dp"></ProgressBar><ListView android:layout_width="fill_parent"
+	<ProgressBar android:id="@+id/ProgressBar01" android:layout_width="fill_parent" android:progressDrawable="@android:drawable/progress_horizontal" android:indeterminate="false" android:max="30000" android:progress="15000" style="?android:attr/progressBarStyleHorizontal" android:layout_marginLeft="20dp" android:layout_marginRight="20dp" android:layout_marginTop="15dp" android:layout_height="7dp"></ProgressBar><ListView android:layout_width="fill_parent"
 		android:layout_height="fill_parent" android:id="@+id/tokenList" android:layout_margin="10dp" android:background="#66000000" android:visibility="gone">
 
 </ListView>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="regionChoose">Choose your region</string>
+    <string name="regionSelect">Region</string>
     <string name="addNewToken">Add A Token</string>
     <string name="authCode">Authentication Code</string>
     <string name="tokenSecret">Token Secret</string>
@@ -20,7 +22,7 @@
     <string name="salt">0b92f5529e30138d2939bdf6e0c7b9bf3f4400442b33023ecab9fa3675d5e2f0843de0ea6e5f9397c5b2b2bd4bc1277fe619b10327a510013e8ac743391e6a1e</string>
     <string name="enroll_host">mobile-service.blizzard.com</string>
     <string name="enroll_uri">/enrollment/enroll.htm</string>
-    <string name="enroll_url">http://mobile-service.blizzard.com/enrollment/enroll.htm</string>
+    <string name="enroll_url">http://m.%s.mobileservice.blizzard.com/enrollment/enroll.htm</string>
     <string name="delete_confirm">Are you sure you want to delete this token?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>

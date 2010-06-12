@@ -9,11 +9,11 @@
 		android:layout_height="fill_parent">
 		<TextView android:id="@+id/toptext" android:layout_width="fill_parent"
 			android:layout_height="0dip" android:layout_weight="1"
-			android:gravity="center_vertical" android:text="test"
-			android:textColor="#ffffff" android:textStyle="bold" android:textSize="8pt"/>
+			android:text="test"
+			android:textColor="#ffffff" android:textStyle="bold" android:textSize="5pt" android:gravity="top"/>
 		<TextView android:layout_width="fill_parent"
-			android:layout_weight="1" android:id="@+id/bottomtext"
+			android:id="@+id/bottomtext"
 			android:ellipsize="marquee" android:text="test"
-			android:layout_height="0dip" android:textColor="#ffffff"/>
+			android:layout_height="0dip" android:textColor="#ffffff" android:textSize="12pt" android:textStyle="bold" android:layout_weight="2" android:textScaleX="1.1"/>
 	</LinearLayout>
 </LinearLayout>
