@@ -8,14 +8,13 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
-import org.apache.http.client.ClientProtocolException;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -30,23 +29,21 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class FlexAuth extends Activity {
 	static final int MENU_ADD_AUTH = 1;	
 	static final int MENU_INFO = 2;
-	static final int DIALOG_EDIT = 1;
 	static final int DIALOG_DATA_MISSING = 2;
 	static final int DIALOG_BAD_SERIAL = 3;
 	static final int VIEW_ID = 1;
 	static final int DELETE_ID = 2;
+	static final int NEW_TOKEN = 1;
+	
 	public static final Exception InvalidSerialException = null;
 	private Handler mHandler = new Handler();
 	
@@ -91,117 +88,6 @@ public class FlexAuth extends Activity {
 		}
 	}
 	
-	private class AccountDialog extends Dialog {
-		private Button save;
-		private Button generate;
-		private EditText accountName;
-		private EditText serial;
-		private EditText secret;
-		private Context context;
-		private Spinner region;
-		
-		public AccountDialog(Context c, CharSequence title) {
-			super(c);
-			this.context = c;
-			this.setTitle(title);
-		}
-		
-		private Token generate(String region) {
-			Token t = new Token();
-			t.setRegion(region);
-			try {
-				t.generate();
-			} catch (NoSuchAlgorithmException e) {
-	    		new AlertDialog.Builder(context)
-	    		.setMessage("HMAC-SHA1 is not supported on this device.")
-	    		.setTitle("Error")
-	    		.setIcon(android.R.drawable.stat_notify_error)
-	    		.show();
-			} catch (ClientProtocolException e) {
-	    		new AlertDialog.Builder(context)
-	    		.setMessage("Error in client protocol.")
-	    		.setTitle("Error")
-	    		.setIcon(android.R.drawable.stat_notify_error)
-	    		.show();
-			} catch (IOException e) {
-	    		new AlertDialog.Builder(context)
-	    		.setMessage("Couldn't establish a network connection. Please try again later.")
-	    		.setTitle("Error")
-	    		.setIcon(android.R.drawable.stat_notify_error)
-	    		.show();
-			} catch (InvalidSerialException e) {
-	    		new AlertDialog.Builder(context)
-	    		.setMessage("Failed to generate a valid serial. Please try again.")
-	    		.setTitle("Error")
-	    		.setIcon(android.R.drawable.stat_notify_error)
-	    		.show();
-	    	}
-			return t;
-		}
-		
-		protected void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			setContentView(R.layout.new_account);
-			
-		    region = (Spinner) findViewById(R.id.regionSelect);
-		    ArrayAdapter adapter = ArrayAdapter.createFromResource(context,
-		    		R.array.regions, android.R.layout.simple_spinner_item);
-		    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		    region.setAdapter(adapter);
-			
-			save = (Button)findViewById(R.id.saveToken);
-			generate = (Button)findViewById(R.id.requestToken);
-			accountName = (EditText)findViewById(R.id.accountName);
-			serial = (EditText)findViewById(R.id.tokenSerial);
-			secret = (EditText)findViewById(R.id.tokenSecret);
-
-			Token t = generate((String)region.getSelectedItem());
-			secret.setText(t.secret);
-			serial.setText(t.serial);					
-			accountName.setText("");
-			
-			save.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					accountName = (EditText)findViewById(R.id.accountName);
-					
-					String n = accountName.getText().toString().trim();
-					String ss = serial.getText().toString().trim();
-					String sl = secret.getText().toString().trim();
-					
-					String error = null;
-					if(n.compareTo("") == 0) {
-						error = "Please enter a name for this token";
-					} else if(ss.compareTo("") == 0) {
-						error = "Please enter a serial for this token";
-					} else if(sl.compareTo("") == 0) {
-						error = "Please enter a secret for this token";
-					}
-					if(error != null) {
-						Toast.makeText(context, error, 4).show();
-						return;
-					}
-					String[] args = {n, ss, sl};				
-					db.execSQL("INSERT INTO accounts (name, serial, secret) VALUES (?, ?, ?)", args);
-					Toast.makeText(context, "Token successfully added!", 4).show();
-					updateTokenList();
-					dismiss();
-				}
-			});
-			
-			generate.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					Token t = generate((String)region.getSelectedItem());
-					EditText serial = (EditText)findViewById(R.id.tokenSerial);
-					EditText secret = (EditText)findViewById(R.id.tokenSecret);
-					secret.setText(t.secret);
-					serial.setText(t.serial);					
-				}
-			});
-		}
-	}
-	
 	private int lastMod = -1;
 	private Runnable mUpdateTimeTask = new Runnable() {
 		public void run() {
@@ -224,11 +110,17 @@ public class FlexAuth extends Activity {
         AppDb dbHelper = new AppDb(this);
         db = dbHelper.write_db();
         readDb = dbHelper.read_db();
+        
+        SharedPreferences settings = getSharedPreferences("tokenprefs", 0);
+        Token.timeOffset = settings.getLong("offset", 0);        
 
         new Thread() {
         	public void run() {
             	try {
-        			Token.fetchTimeOffset();
+        			long offset = Token.fetchTimeOffset();
+    				SharedPreferences settings = getSharedPreferences("tokenprefs", 0);
+    				SharedPreferences.Editor editor = settings.edit();
+    				editor.putLong("offset", offset);        			
         		} catch (IOException e) {}
         	}
         }.start();
@@ -238,7 +130,7 @@ public class FlexAuth extends Activity {
         Button addNew = (Button)findViewById(R.id.addNewAccount);
         addNew.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View v) {
-        		showDialog(DIALOG_EDIT);
+        		newToken();
         	}
         });
         
@@ -335,7 +227,7 @@ public class FlexAuth extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch(item.getItemId()) {
     	case MENU_ADD_AUTH:
-    		showDialog(DIALOG_EDIT);
+    		newToken();
     		return true;
     	case MENU_INFO:
     		InputStream is;
@@ -371,13 +263,15 @@ public class FlexAuth extends Activity {
     	return false;
     }
     
+    protected void newToken() {
+    	Intent i = new Intent(this, AddToken.class);
+    	startActivityForResult(i, NEW_TOKEN);
+    }
+    
     protected Dialog onCreateDialog(int id) {
     	Dialog dialog;
     	CharSequence msg;
     	switch(id) {
-    	case DIALOG_EDIT:
-    		dialog = new AccountDialog(this, "New Account");
-    		break;
     	case DIALOG_DATA_MISSING:
     		msg = getResources().getText(R.string.invalid_data);
     		dialog = new AlertDialog.Builder(this).setMessage(msg).create();
@@ -410,5 +304,17 @@ public class FlexAuth extends Activity {
     		super.onContextItemSelected(item);
     	}
     	return false;
+    }
+    
+    @Override 
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {     
+      super.onActivityResult(requestCode, resultCode, data);
+      switch(requestCode) {
+	      case(NEW_TOKEN): {
+	    	  if(resultCode == Activity.RESULT_OK) {
+	    		  updateTokenList();
+	    	  }
+	      }
+      }
     }
 }

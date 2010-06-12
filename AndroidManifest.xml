@@ -11,11 +11,13 @@
 			</intent-filter>
 		</activity>
 		<activity android:name=".TokenView"></activity>
+		<activity android:name=".AddToken"></activity>
 		<activity android:name="TokenWidgetConfig">
 			<intent-filter>
 				<action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
 			</intent-filter>
 		</activity>
+		<!--
 		<receiver android:name="TokenWidgetProvider">
 			<intent-filter>
 				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -23,6 +25,7 @@
 			<meta-data android:name="android.appwidget.provider"
 				android:resource="@xml/widget" />
 		</receiver>
+		 -->
 	</application>
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 	<uses-sdk android:minSdkVersion="3" android:targetSdkVersion="3" />

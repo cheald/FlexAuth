@@ -44,10 +44,12 @@ public class TokenWidgetProvider extends AppWidgetProvider {
 
 		@Override
 		public void onHandleIntent(Intent intent) {
+			/*
 			ComponentName me = new ComponentName(this, TwitterWidget.class);
 			AppWidgetManager mgr = AppWidgetManager.getInstance(this);
 
 			mgr.updateAppWidget(me, buildUpdate(this));
+			*/
 		}
 
 		private RemoteViews buildUpdate(Context context) {
@@ -56,6 +58,7 @@ public class TokenWidgetProvider extends AppWidgetProvider {
 			String user = prefs.getString("user", null);
 			String password = prefs.getString("password", null);
 
+			/*
 			if (user != null && password != null) {
 				Twitter client = new Twitter(user, password);
 				List<Twitter.Status> timeline = client.getFriendsTimeline();
@@ -77,6 +80,7 @@ public class TokenWidgetProvider extends AppWidgetProvider {
 					updateViews.setOnClickPendingIntent(R.id.configure, pi);
 				}
 			}
+			*/
 
 			return (updateViews);
 		}

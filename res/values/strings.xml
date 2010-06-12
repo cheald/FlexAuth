@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="tokenEntry">Token Entry</string>
+    <string name="requestNewToken">Request New Token</string>
+    <string name="manualToken">Enter Token Manually</string>
     <string name="regionChoose">Choose your region</string>
     <string name="regionSelect">Region</string>
     <string name="addNewToken">Add A Token</string>
@@ -7,7 +10,7 @@
     <string name="tokenSecret">Token Secret</string>
     <string name="tokenSerial">Token Serial</string>
     <string name="main_no_items">No tokens yet!</string>
-    <string name="generateToken">Generate Token</string>
+    <string name="generateToken">Generate New Token</string>
     <string name="save">Save</string>
     <string name="tokenSecretLabel">Secret</string>
     <string name="addAccountLabel">Add New Account</string>

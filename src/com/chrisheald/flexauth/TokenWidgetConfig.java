@@ -67,6 +67,7 @@ public class TokenWidgetConfig extends PreferenceActivity {
 
 	@Override
 	public void onBackPressed() {
+		/*
 		if (CONFIGURE_ACTION.equals(getIntent().getAction())) {
 			Intent intent = getIntent();
 			Bundle extras = intent.getExtras();
@@ -87,6 +88,7 @@ public class TokenWidgetConfig extends PreferenceActivity {
 				sendBroadcast(new Intent(this, TwitterWidget.class));
 			}
 		}
+		*/
 
 		super.onBackPressed();
 	}
