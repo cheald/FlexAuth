@@ -135,19 +135,13 @@ public class AddToken extends Activity {
 		String error = null;
 		if(n.compareTo("") == 0) {
 			error = "Please enter a name for this token";
+			accountName.setError(error);
 		} else if(ss.compareTo("") == 0) {
 			error = "Please enter a serial for this token";
+			serial.setError(error);
 		} else if(sl.compareTo("") == 0) {
 			error = "Please enter a secret for this token";
-		}
-		if(error != null) {
-			new AlertDialog.Builder(context)
-				.setMessage(error)
-				.setTitle("Error")
-				.setNeutralButton("OK", cancel)
-				.setIcon(android.R.drawable.stat_notify_error)
-				.show();
-			return;
+			secret.setError(error);
 		}
 		String[] args = {n, ss, sl};				
 		db.execSQL("INSERT INTO accounts (name, serial, secret) VALUES (?, ?, ?)", args);

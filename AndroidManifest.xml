@@ -17,16 +17,22 @@
 				<action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
 			</intent-filter>
 		</activity>
-		<!--
 		<receiver android:name="TokenWidgetProvider">
 			<intent-filter>
 				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+				<data android:scheme="flexauth" />
 			</intent-filter>
 			<meta-data android:name="android.appwidget.provider"
 				android:resource="@xml/widget" />
 		</receiver>
-		 -->
+    <receiver android:name="TokenWidgetProvider">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+      </intent-filter>
+      <meta-data android:name="android.appwidget.provider"
+        android:resource="@xml/widget" />
+    </receiver>		
 	</application>
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
-	<uses-sdk android:minSdkVersion="3" android:targetSdkVersion="3" />
+	<uses-sdk android:minSdkVersion="4" android:targetSdkVersion="4" />
 </manifest> 

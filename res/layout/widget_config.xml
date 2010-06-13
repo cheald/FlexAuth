@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_height="fill_parent" android:layout_width="fill_parent">
+	<TextView android:id="@+id/TextView01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:background="#444444" android:text="@string/tokenSelectLabel" android:textSize="5pt"></TextView>
+	
+<ListView android:id="@+id/tokenSelector" android:layout_width="fill_parent" android:layout_height="fill_parent"></ListView>
+</LinearLayout>

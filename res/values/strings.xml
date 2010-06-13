@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="tokenSelectLabel">Select Token</string>
     <string name="tokenEntry">Token Entry</string>
     <string name="requestNewToken">Request New Token</string>
     <string name="manualToken">Enter Token Manually</string>

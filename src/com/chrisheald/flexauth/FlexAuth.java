@@ -11,27 +11,21 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.ContextMenu;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -49,44 +43,6 @@ public class FlexAuth extends Activity {
 	
 	private SQLiteDatabase db, readDb;
 	private TokenAdapter tAdapter;
-	
-	private class TokenAdapter extends ArrayAdapter<Token> {
-		private ArrayList<Token> items;
-		
-		public TokenAdapter(Context context, int textViewResourceId, ArrayList<Token> items) {
-            super(context, textViewResourceId, items);
-            this.items = items;
-		}
-		
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			View v = convertView;
-			if (v == null) {
-				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				v = vi.inflate(R.layout.token_row, null);
-			}
-			Token o = items.get(position);
-			if (o != null) {
-				TextView tt = (TextView) v.findViewById(R.id.toptext);
-				TextView bt = (TextView) v.findViewById(R.id.bottomtext);
-				if (tt != null) {
-					tt.setText(o.name);
-				}
-				if (bt != null) {
-					try {
-						bt.setText(o.getPassword());
-					} catch (InvalidKeyException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (NoSuchAlgorithmException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-			return v;
-		}
-	}
 	
 	private int lastMod = -1;
 	private Runnable mUpdateTimeTask = new Runnable() {
@@ -139,28 +95,7 @@ public class FlexAuth extends Activity {
     }
     
     private void updateTokenList() {
-    	Cursor c = null;
-    	int count = 0;
-		try {
-			c = readDb.rawQuery(
-					"select * from accounts order by id asc", null);
-			c.moveToFirst();
-			tAdapter.clear();
-			tAdapter.notifyDataSetChanged();
-			while (!c.isAfterLast()) {
-				String name = c.getString(c.getColumnIndexOrThrow("name"));
-				String secret = c.getString(c.getColumnIndexOrThrow("secret"));
-				String serial = c.getString(c.getColumnIndexOrThrow("serial"));
-				Token t = new Token(name, secret, serial);
-				t._id = c.getInt(c.getColumnIndexOrThrow("id"));
-				c.moveToNext();
-				tAdapter.add(t);
-				count += 1;
-			}
-			tAdapter.notifyDataSetChanged();
-		} finally {
-			if(c != null) c.close();
-    	}
+    	int count = TokenAdapter.GetTokenList(tAdapter, readDb);
 		
 		findViewById(R.id.tokenList).setVisibility(count == 0 ? View.GONE : View.VISIBLE);
 		findViewById(R.id.noTokensLabel).setVisibility(count > 0 ? View.GONE : View.VISIBLE);
