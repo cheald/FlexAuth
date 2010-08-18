@@ -1,0 +1,1 @@
+Licensed under the GPL. See attached license.txt for a full copy of the license.
