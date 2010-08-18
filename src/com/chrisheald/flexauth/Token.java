@@ -49,13 +49,11 @@ public class Token {
 	
 	public String getPassword() throws NoSuchAlgorithmException, InvalidKeyException {
 		long time = (System.currentTimeMillis() + timeOffset) / 30000L;
-		byte[] src = new byte[8];
-		src[0] = 0x0;
-		src[1] = 0x0;
-		src[2] = 0x0;
-		src[3] = 0x0;
+		byte[] src = {0,0,0,0,0,0,0,0};
 		byteBuffer.clear();		
 		System.arraycopy(byteBuffer.putInt((int)time).array(), 0, src, 4, 4);
+		
+		if(secret.length() != 40) throw new InvalidKeyException();
 		
 		byte[] key = hexStringToByteArray(secret);
 		

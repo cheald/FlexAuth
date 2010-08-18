@@ -139,12 +139,17 @@ public class AddToken extends Activity {
 		} else if(ss.compareTo("") == 0) {
 			error = "Please enter a serial for this token";
 			serial.setError(error);
+		} else if (sl.length() != 40) {
+			error = "Token secret must be exactly 40 characters long";
+			secret.setError(error);
 		} else if(sl.compareTo("") == 0) {
 			error = "Please enter a secret for this token";
 			secret.setError(error);
 		}
+		if(error != null) return;
 		String[] args = {n, ss, sl};				
 		db.execSQL("INSERT INTO accounts (name, serial, secret) VALUES (?, ?, ?)", args);
+		
 		Toast.makeText(context, "Token successfully added!", 4).show();
 		
 		setResult(Activity.RESULT_OK, new Intent());

@@ -248,6 +248,16 @@ public class FlexAuth extends Activity {
 	      case(NEW_TOKEN): {
 	    	  if(resultCode == Activity.RESULT_OK) {
 	    		  updateTokenList();
+	    			new AlertDialog.Builder(FlexAuth.this)
+	    			.setMessage("Be sure to back up your token secret to a secure location! If you uninstall the app or delete the entry, the tokens stored here will be erased and you won't be able to generate authenticator codes.\n\nTo restore access, add a new token with your backed up secret.")
+	    			.setTitle("Token added!")
+	    			.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+	    		           public void onClick(DialogInterface dialog, int id) {
+	    		                dialog.cancel();
+	    		           }
+	    				})
+	    			.setIcon(android.R.drawable.stat_sys_warning)
+	    			.show();	    		  
 	    	  }
 	      }
       }

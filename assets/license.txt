@@ -21,3 +21,7 @@ Source: http://www.famfamfam.com/
 
 Lock icon used under free for noncommercial use license.
 Source: http://www.iconarchive.com/show/mac-icons-by-artua/Lock-icon.html
+
+---------------------------------------
+
+FlexAuth is not developed or endorsed by Blizzard Entertainment, Inc. Blizzard and Battle.net are trademarks of Blizzard Entertainment, Inc. 
