@@ -11,12 +11,14 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,20 +28,35 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class FlexAuth extends Activity {
 	static final int MENU_ADD_AUTH = 1;	
 	static final int MENU_INFO = 2;
+	static final int MENU_RESYNC = 3;
 	static final int DIALOG_DATA_MISSING = 2;
 	static final int DIALOG_BAD_SERIAL = 3;
 	static final int VIEW_ID = 1;
 	static final int DELETE_ID = 2;
 	static final int NEW_TOKEN = 1;
+	static final int REFRESH = 1;
+	static final int NOTIFY_SYNCED = 2;
 	
 	public static final Exception InvalidSerialException = null;
 	private Handler mHandler = new Handler();
+	private Handler mRefresh = new Handler() {
+		public void handleMessage(Message msg) {
+			switch(msg.what) {
+			case REFRESH:
+				updateTokenList();
+			case NOTIFY_SYNCED:
+				Toast.makeText(FlexAuth.this, "Resync successful!", 4).show();
+			}
+		}
+	};
+	
 	
 	private SQLiteDatabase db, readDb;
 	private TokenAdapter tAdapter;
@@ -92,6 +109,11 @@ public class FlexAuth extends Activity {
         
 		mHandler.removeCallbacks(mUpdateTimeTask);
 		mHandler.postDelayed(mUpdateTimeTask, 50);
+    }
+    
+    public void finalize() {
+    	db.close();
+    	readDb.close();
     }
     
     private void updateTokenList() {
@@ -153,8 +175,39 @@ public class FlexAuth extends Activity {
     	}
     }
     
+	public void resync() {
+		final ProgressDialog progress = ProgressDialog.show(this, "", "Synchronizing. Please wait...", true);
+        new Thread() {
+        	public void run() {
+    			long offset;
+				try {
+					offset = Token.fetchTimeOffset();
+					SharedPreferences settings = getSharedPreferences("tokenprefs", 0);
+					SharedPreferences.Editor editor = settings.edit();
+					editor.putLong("offset", offset); 
+					progress.dismiss();
+					mRefresh.sendEmptyMessage(REFRESH);
+					mRefresh.sendEmptyMessage(NOTIFY_SYNCED);
+				} catch (IOException e) {
+					progress.dismiss();
+	    			new AlertDialog.Builder(FlexAuth.this)
+	    			.setMessage("Failed to connect to Blizzard's authentication servers")
+	    			.setTitle("Sync failed")
+	    			.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+	    		           public void onClick(DialogInterface dialog, int id) {
+	    		                dialog.cancel();
+	    		           }
+	    				})
+	    			.setIcon(android.R.drawable.stat_sys_warning)
+	    			.show();	    		  
+				}
+        	}
+        }.start();
+	}    
+    
     public boolean onCreateOptionsMenu(Menu menu) {
     	menu.add(0, MENU_ADD_AUTH, 0, "Add Account").setIcon(android.R.drawable.ic_menu_add);
+    	menu.add(0, MENU_RESYNC, 0, "Resync").setIcon(android.R.drawable.ic_menu_recent_history);
     	menu.add(0, MENU_INFO, 0, "Info").setIcon(android.R.drawable.ic_menu_info_details);
     	return true;
     }
@@ -193,6 +246,9 @@ public class FlexAuth extends Activity {
     		.setTitle("License & Information")
     		.setIcon(android.R.drawable.ic_menu_info_details)
     		.show();
+    		return true;
+    	case MENU_RESYNC:
+    		resync();
     		return true;
     	}
     	return false;

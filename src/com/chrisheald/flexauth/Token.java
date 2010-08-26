@@ -69,7 +69,7 @@ public class Token {
 		int code = byteBuffer.getInt() & 0x7FFFFFFF;
 		double modulo = Math.pow(10d, DIGITS);
 		code = (int)((double)code % modulo);
-		return Integer.toString(code);
+		return String.format("%08d", code);
 	}
 	
 	public byte[] hexStringToByteArray(String s) {

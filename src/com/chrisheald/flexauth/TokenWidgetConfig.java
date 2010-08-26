@@ -77,5 +77,6 @@ public class TokenWidgetConfig extends Activity {
 		});
         
         TokenAdapter.GetTokenList(tAdapter, readDb);
+        readDb.close();
 	}
 }
