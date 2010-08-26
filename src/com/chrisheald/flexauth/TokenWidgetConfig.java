@@ -46,7 +46,6 @@ public class TokenWidgetConfig extends Activity {
         lv.setAdapter(tAdapter);
         
         lv.setOnItemClickListener(new OnItemClickListener() {
-			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 SharedPreferences.Editor configEditor = config.edit();
                 Token t = tAdapter.items.get((int)arg3);
@@ -62,7 +61,7 @@ public class TokenWidgetConfig extends Activity {
 				AppWidgetManager mgr = AppWidgetManager.getInstance(context);
 				String code = "<unknown>";
 				try {
-					code = t.getPassword();
+					code = t.getPassword(); 
 				} catch (InvalidKeyException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

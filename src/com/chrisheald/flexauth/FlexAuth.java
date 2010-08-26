@@ -148,7 +148,6 @@ public class FlexAuth extends Activity {
         tAdapter = new TokenAdapter(this, R.layout.token_row, new ArrayList<Token>());
         lv.setAdapter(tAdapter);
         lv.setOnItemClickListener(new OnItemClickListener() {
-			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				viewToken(arg3);				
 			}
