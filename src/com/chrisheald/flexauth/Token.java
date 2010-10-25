@@ -55,7 +55,7 @@ public class Token {
 		
 		if(secret.length() != 40) throw new InvalidKeyException();
 		
-		byte[] key = hexStringToByteArray(secret);
+		byte[] key = hexStringToByteArray(secret.toLowerCase());
 		
 		SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA1_ALGORITHM);
 		Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);

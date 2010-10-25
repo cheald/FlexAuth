@@ -27,7 +27,7 @@
 				android:layout_marginTop="10dip" android:text="@string/tokenSecretLabel"></TextView>
 			<EditText android:layout_height="wrap_content"
 				android:layout_width="fill_parent" android:id="@+id/tokenSecret"
-				android:textSize="8pt" android:imeOptions="actionDone" android:inputType="number" android:digits="ABCDEFabcdef01234567890"></EditText>
+				android:textSize="8pt" android:imeOptions="actionDone" android:digits="ABCDEFabcdef01234567890"></EditText>
 			<TextView android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:text="@string/regionSelect" android:id="@+id/regionLabel"></TextView>
 			<Spinner android:layout_height="wrap_content"
