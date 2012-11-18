@@ -22,6 +22,17 @@
 			<EditText android:layout_height="wrap_content"
 				android:layout_width="fill_parent" android:id="@+id/tokenSerial"
 				android:maxLines="1" android:imeOptions="actionNext"></EditText>
+
+			<TextView
+			    android:id="@+id/tokenRestoreLabel"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:layout_marginTop="10dip"
+			    android:text="@string/tokenRestoreLabel" >
+</TextView>
+			<EditText android:layout_height="wrap_content"
+				android:layout_width="fill_parent" android:id="@+id/tokenRestore"
+				android:maxLines="1" android:imeOptions="actionNext"></EditText>
 			<TextView android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:id="@+id/tokenSecretLabel"
 				android:layout_marginTop="10dip" android:text="@string/tokenSecretLabel"></TextView>
@@ -36,10 +47,21 @@
 			<RelativeLayout android:id="@+id/RelativeLayout01"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				android:layout_marginTop="20dp">
-				<Button android:layout_width="wrap_content"
-					android:layout_height="wrap_content" android:id="@+id/requestToken"
-					android:text="@string/generateToken"
-					android:layout_alignParentRight="true" android:onClick="generateToken" android:drawableLeft="@drawable/world_link" android:drawablePadding="10dp"></Button>
+
+				<LinearLayout
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:gravity="right" 
+     				android:layout_alignParentRight="true">"
+					<Button android:layout_width="wrap_content"
+						android:layout_height="wrap_content" android:id="@+id/requestToken"
+						android:text="@string/generateToken"
+						android:onClick="generateToken" android:drawableLeft="@drawable/world_link" android:drawablePadding="10dp"></Button>
+					<Button android:layout_width="wrap_content"
+						android:layout_height="wrap_content" android:id="@+id/restoreToken"
+						android:text="@string/restoreToken"
+						android:onClick="restoreOldToken" android:drawableLeft="@drawable/world_link" android:drawablePadding="10dp"></Button>
+				</LinearLayout>
 				<Button android:layout_width="wrap_content"
 					android:layout_height="wrap_content" android:layout_gravity="left"
 					android:id="@+id/saveToken" android:text="@string/save" android:onClick="saveToken" android:drawableLeft="@drawable/disk" android:drawablePadding="10dp"></Button>
@@ -58,6 +80,10 @@
 				android:text="@string/manualToken" android:layout_gravity="left|fill_horizontal"
 				android:layout_width="fill_parent" android:drawableLeft="@drawable/pencil_add"
 				android:onClick="newManualToken"></Button>
+			<Button android:id="@+id/Button03" android:layout_height="wrap_content"
+				android:text="@string/restoreToken" android:layout_gravity="left|fill_horizontal"
+				android:layout_width="fill_parent" android:drawableLeft="@drawable/pencil_add"
+				android:onClick="restoreToken"></Button>
 		</LinearLayout>
 	</LinearLayout>
 </ScrollView>

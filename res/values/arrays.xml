@@ -2,5 +2,7 @@
 	<string-array name="regions">
 		<item name="regionEU">EU</item>
 		<item name="regionUS">US</item>
+		<item name="regionCN">CN</item>
+		<item name="regionKR">KR</item>
 	</string-array>
 </resources>
