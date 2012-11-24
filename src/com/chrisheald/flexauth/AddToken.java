@@ -1,9 +1,18 @@
 package com.chrisheald.flexauth;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.spec.InvalidKeySpecException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import org.apache.http.client.ClientProtocolException;
+
+import com.chrisheald.flexauth.Token.RestoreException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -26,12 +35,15 @@ import android.widget.Toast;
 public class AddToken extends Activity {
 	static final int RECEIVED_TOKEN = 1;
 	static final int ALERT_MSG = 2;
+	static final int RECEIVED_RESTORE = 3;
 	private EditText accountName;
 	private EditText serial;
 	private EditText secret;
+	private EditText rstcode;
 	private TextView regionLabel;
 	private Spinner region;
 	private Button generate;
+	private Button restore;
 	private SQLiteDatabase db;
 	private Context context;
 	private DialogInterface.OnClickListener cancel;
@@ -51,6 +63,7 @@ public class AddToken extends Activity {
 	    region = (Spinner) findViewById(R.id.regionSelect);
 	    regionLabel = (TextView) findViewById(R.id.regionLabel);
 	    generate = (Button) findViewById(R.id.requestToken);
+	    restore = (Button) findViewById(R.id.restoreToken);
 	    ArrayAdapter adapter = ArrayAdapter.createFromResource(context,
 	    		R.array.regions, android.R.layout.simple_spinner_item);
 	    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -59,6 +72,7 @@ public class AddToken extends Activity {
 		accountName = (EditText)findViewById(R.id.accountName);
 		serial = (EditText)findViewById(R.id.tokenSerial);
 		secret = (EditText)findViewById(R.id.tokenSecret);
+		rstcode = (EditText)findViewById(R.id.tokenRestore);
 
 		accountName.setText("");
 		
@@ -74,6 +88,11 @@ public class AddToken extends Activity {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
+				case(RECEIVED_RESTORE): {
+					Token t = (Token)msg.obj;
+					showEntryForm(t.secret, t.serial);
+					break;
+				}
 				case(RECEIVED_TOKEN): {
 					Token t = (Token)msg.obj;
 					showEntryForm(t.secret, t.serial);
@@ -103,11 +122,29 @@ public class AddToken extends Activity {
 		secret.setText(sSecret);
 	}
 
+	public void restoreToken(View target) {
+		findViewById(R.id.tokenForm).setVisibility(View.VISIBLE);
+		findViewById(R.id.tokenTypeSelect).setVisibility(View.GONE);
+		EditText secret = (EditText) findViewById(R.id.tokenSecret);
+		EditText serial = (EditText) findViewById(R.id.tokenSerial);
+		serial.setText("");
+		secret.setText("");
+		secret.setEnabled(false);
+		rstcode.setText("");
+		region.setVisibility(View.GONE);
+		regionLabel.setVisibility(View.GONE);
+		generate.setVisibility(View.GONE);	
+		restore.setVisibility(View.VISIBLE);
+		rstcode.setVisibility(View.VISIBLE);
+	}
+
 	public void newManualToken(View target) {
 		showEntryForm("", "");
 		region.setVisibility(View.GONE);
 		regionLabel.setVisibility(View.GONE);
-		generate.setVisibility(View.GONE);		
+		generate.setVisibility(View.GONE);	
+		restore.setVisibility(View.GONE);	
+		rstcode.setVisibility(View.GONE);
 	}
 	  
 	public void requestNewToken(View target) {
@@ -115,6 +152,7 @@ public class AddToken extends Activity {
 		region.setVisibility(View.VISIBLE);
 		regionLabel.setVisibility(View.VISIBLE);
 		generate.setVisibility(View.VISIBLE);
+		rstcode.setVisibility(View.GONE);
         new Thread() {
         	public void run() {
         		Token t = generate((String) region.getSelectedItem());
@@ -124,7 +162,19 @@ public class AddToken extends Activity {
         	}
         }.start();
 	}
-	
+
+	public void restoreOldToken(View target) {
+		final ProgressDialog progress = ProgressDialog.show(this, "", "Requesting token. Please wait...", true);
+        new Thread() {
+        	public void run() {
+        		Token t = restore(serial.getText().toString().trim(), rstcode.getText().toString().trim());
+           		progress.dismiss();
+           		Message msg = messageHandler.obtainMessage(RECEIVED_RESTORE, t);
+           		messageHandler.sendMessage(msg); 
+        	}
+        }.start();
+	}
+
 	public void saveToken(View target) {
 		accountName = (EditText)findViewById(R.id.accountName);
 		
@@ -174,6 +224,42 @@ public class AddToken extends Activity {
 			errMsg = "Couldn't establish a network connection. Please try again later.";
 		} catch (InvalidSerialException e) {
 			errMsg = "Failed to generate a valid serial. Please try again.";
+		}
+		if(errMsg != null) {
+	   		Message msg = messageHandler.obtainMessage(ALERT_MSG, errMsg);
+	   		messageHandler.sendMessage(msg);
+		}
+		return t;
+	}
+	
+	private Token restore(String serial, String restorecode)
+	{
+		String errMsg = null;
+		Token t = new Token();
+		try {
+			t.Restore(serial, restorecode);
+		} catch (NoSuchAlgorithmException e) {
+			errMsg = "HMAC-SHA1 is not supported on this device.";
+		} catch (ClientProtocolException e) {
+			errMsg = "Error in client protocol.";
+		} catch (IOException e) {
+			errMsg = "Couldn't establish a network connection. Please try again later.";
+		} catch (InvalidSerialException e) {
+			errMsg = "Failed to generate a valid serial. Please try again.";
+		} catch (InvalidKeyException e) {
+			errMsg = "Invalid Key";
+		} catch (RestoreException e) {
+			errMsg = "Restore Error: " + e.getMessage();
+		} catch (NoSuchPaddingException e) {
+			errMsg = "RSA Error";
+		} catch (NoSuchProviderException e) {
+			errMsg = "RSA Error";
+		} catch (InvalidKeySpecException e) {
+			errMsg = "RSA Error";
+		} catch (IllegalBlockSizeException e) {
+			errMsg = "RSA Error";
+		} catch (BadPaddingException e) {
+			errMsg = "RSA Error";
 		}
 		if(errMsg != null) {
 	   		Message msg = messageHandler.obtainMessage(ALERT_MSG, errMsg);

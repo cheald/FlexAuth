@@ -20,9 +20,11 @@ public class TokenView extends Activity {
     	TextView secret = (TextView)findViewById(R.id.tokenSecretText);
     	TextView serial = (TextView)findViewById(R.id.tokenSerialText);
     	TextView authCode = (TextView)findViewById(R.id.authCode);
+    	TextView restore = (TextView)findViewById(R.id.tokenRestoreText);
 		secret.setText(getIntent().getStringExtra("secret"));
 		serial.setText(getIntent().getStringExtra("serial"));
 		authCode.setText(getIntent().getStringExtra("auth"));
+		restore.setText(getIntent().getStringExtra("restore"));
 		registerForContextMenu(secret);
 		registerForContextMenu(serial);
 	}
