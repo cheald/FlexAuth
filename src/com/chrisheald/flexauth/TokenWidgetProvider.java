@@ -9,6 +9,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.SystemClock;
 import android.widget.RemoteViews;
@@ -16,10 +17,12 @@ import android.widget.RemoteViews;
 public class TokenWidgetProvider extends AppWidgetProvider {
 	public static String URI_SCHEME = "flexauth";
 
-	public static void UpdateWidget(Context context, AppWidgetManager mgr, String code, String name, int id) {
+	public static void UpdateWidget(Context context, AppWidgetManager mgr, String code, String name, boolean valid, int id) {
 		RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.widget);
 		updateViews.setTextViewText(R.id.widgetCode, code);
 		updateViews.setTextViewText(R.id.widgetName, name);
+		updateViews.setTextColor(R.id.widgetCode, valid?Color.GREEN:Color.RED);
+		
 		
 		Intent intent = new Intent(context, FlexAuth.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
@@ -35,6 +38,7 @@ public class TokenWidgetProvider extends AppWidgetProvider {
 	        SharedPreferences config = context.getSharedPreferences(TokenWidgetConfig.PREFS_NAME, 0);
 	        String secret = config.getString(String.format(TokenWidgetConfig.PREFS_SECRET_PATTERN, mAppWidgetId), null);
 	        String name = config.getString(String.format(TokenWidgetConfig.PREFS_NAME_PATTERN, mAppWidgetId), "<no name>");
+	        boolean expire = ((System.currentTimeMillis() + Token.timeOffset) % 30000) < 24000;
 	        
 			Token t = new Token();
 			String code = "<no token>";
@@ -50,7 +54,7 @@ public class TokenWidgetProvider extends AppWidgetProvider {
 					e.printStackTrace();
 				}
 			}
-			UpdateWidget(context, mgr, code, name, mAppWidgetId);
+			UpdateWidget(context, mgr, code, name, expire, mAppWidgetId);
 		}
 	}
 	

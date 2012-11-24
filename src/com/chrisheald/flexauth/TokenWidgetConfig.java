@@ -21,6 +21,7 @@ public class TokenWidgetConfig extends Activity {
 	public static final String PREFS_NAME = "FlexAuthWidgetPrefs";
 	public static final String PREFS_SECRET_PATTERN = "Secret-%d";
 	public static final String PREFS_NAME_PATTERN = "Name-%d";
+	public static final String PREFS_TIME_OFFSET = "TimeOffset";
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -51,6 +52,7 @@ public class TokenWidgetConfig extends Activity {
                 Token t = tAdapter.items.get((int)arg3);
                 configEditor.putString(String.format(PREFS_SECRET_PATTERN, appWidgetId), t.secret);
                 configEditor.putString(String.format(PREFS_NAME_PATTERN, appWidgetId), t.name);
+                configEditor.putLong(PREFS_TIME_OFFSET, Token.timeOffset);
                 configEditor.commit();
 				
                 Intent resultValue = new Intent();
@@ -69,7 +71,7 @@ public class TokenWidgetConfig extends Activity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				TokenWidgetProvider.UpdateWidget(context, mgr, code, t.name, appWidgetId);				
+				TokenWidgetProvider.UpdateWidget(context, mgr, code, t.name, ((System.currentTimeMillis() + Token.timeOffset) % 30000) < 24000, appWidgetId);				
 				
 				finish();
 			}

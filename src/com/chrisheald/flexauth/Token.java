@@ -248,7 +248,7 @@ public class Token {
 	{
         // get byte array of serial
         byte[] data = new byte[34];
-        byte[] serialdata = serial.replace("-", "").getBytes("US-ASCII");
+        byte[] serialdata = serial.toUpperCase().replace("-", "").getBytes("US-ASCII");
         byte[] secretdata = hexStringToByteArray(secret.toLowerCase());;
         System.arraycopy(serialdata, 0, data, 0, 14);
         System.arraycopy(secretdata, 0, data, 14, 20);
